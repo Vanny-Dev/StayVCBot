@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 const dotenv = require('dotenv');
+const express = require('express');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -23,8 +24,6 @@ const client = new Client({
 // When the bot is ready
 client.once('ready', () => {
   console.log(`✅ Bot is ready! Logged in as ${client.user.tag}`);
-  
-  
   joinVC();
 });
 
@@ -67,8 +66,7 @@ function joinVC() {
     // Handle disconnection
     connection.on('error', (error) => {
       console.error('❌ Connection error:', error);
-      // Try to rejoin after error
-      setTimeout(() => joinVC(), 5000);
+      setTimeout(() => joinVC(), 5000); // Try to rejoin after error
     });
 
   } catch (error) {
@@ -101,14 +99,23 @@ client.on('messageCreate', (message) => {
 
 // Handle bot disconnection from voice
 client.on('voiceStateUpdate', (oldState, newState) => {
-  // If the bot was disconnected or moved
-  if (oldState.member?.id === client.user.id) {
-    if (!newState.channelId) {
-      console.log('⚠️ Bot was disconnected from voice. Rejoining in 5 seconds...');
-      setTimeout(() => joinVC(), 5000);
-    }
+  if (oldState.member?.id === client.user.id && !newState.channelId) {
+    console.log('⚠️ Bot was disconnected from voice. Rejoining in 5 seconds...');
+    setTimeout(() => joinVC(), 5000);
   }
 });
 
 // Login to Discord
 client.login(BOT_TOKEN);
+
+// ------------------ Express Web Server ------------------ //
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("✅ Discord bot is running on Render!");
+});
+
+app.listen(PORT, () => {
+  console.log(`🌐 Web server running on port ${PORT}`);
+});
