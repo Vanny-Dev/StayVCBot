@@ -53,7 +53,7 @@ function joinVC() {
       guildId: GUILD_ID,
       adapterCreator: guild.voiceAdapterCreator,
       selfDeaf: true,
-      selfMute: true
+      selfMute: false
     });
 
     console.log(`🎤 Joined voice channel: ${channel.name}`);
@@ -119,3 +119,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🌐 Web server running on port ${PORT}`);
 });
+
